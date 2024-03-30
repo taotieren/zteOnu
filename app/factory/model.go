@@ -1,10 +1,11 @@
 package factory
 
 import (
-	"github.com/go-resty/resty/v2"
+    "fmt"
+    "github.com/go-resty/resty/v2"
 )
 
-var (
+const (
 	AesKeyPool = []byte{
 		0x7B, 0x56, 0xB0, 0xF7, 0xDA, 0x0E, 0x68, 0x52, 0xC8, 0x19,
 		0xF3, 0x2B, 0x84, 0x90, 0x79, 0xE5, 0x62, 0xF8, 0xEA, 0xD2,
@@ -33,10 +34,76 @@ var (
 )
 
 type Factory struct {
-	user   string
-	passwd string
-	ip     string
-	port   int
-	cli    *resty.Client
-	Key    []byte
+    user   string
+    passwd string
+    ip     string
+    port   int
+    cli    *resty.Client
+    Key    []byte
+}
+
+func NewFactory(user, passwd, ip string, port int, key []byte) (*Factory, error) {
+    if len(key) != 128 {
+        return nil, fmt.Errorf("invalid key length: %d", len(key))
+    }
+    return &Factory{
+        user:   user,
+        passwd: passwd,
+        ip:     ip,
+        port:   port,
+        cli:    resty.New(),
+        Key:    key,
+    }, nil
+}
+
+func (f *Factory) User() string {
+    return f.user
+}
+
+func (f *Factory) SetUser(user string) {
+    f.user = user
+}
+
+func (f *Factory) Passwd() string {
+    return f.passwd
+}
+
+func (f *Factory) SetPasswd(passwd string) {
+    f.passwd = passwd
+}
+
+func (f *Factory) IP() string {
+    return f.ip
+}
+
+func (f *Factory) SetIP(ip string) {
+    f.ip = ip
+}
+
+func (f *Factory) Port() int {
+    return f.port
+}
+
+func (f *Factory) SetPort(port int) {
+    f.port = port
+}
+
+func (f *Factory) Client() *resty.Client {
+    return f.cli
+}
+
+func (f *Factory) SetClient(cli *resty.Client) {
+    f.cli = cli
+}
+
+func (f *Factory) Key() []byte {
+    return f.Key
+}
+
+func (f *Factory) SetKey(key []byte) error {
+    if len(key) != 128 {
+        return fmt.Errorf("invalid key length: %d", len(key))
+    }
+    f.Key = key
+    return nil
 }
